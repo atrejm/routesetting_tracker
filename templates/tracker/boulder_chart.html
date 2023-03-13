@@ -1,0 +1,165 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+    <h1>Boulder chart page</h1>
+    <p>
+    {% for key, value in boulders_by_color.items %}
+        {{ key }}: {{ value }} -
+    {% endfor %}
+    </p>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <input class='btn btn-submit btn-secondary' type="submit" value="Confirm" />
+    </form>
+    
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <canvas id="colorChartAll"></canvas>
+            </div>
+            <div class="col-lg-6">
+                <canvas id="gradeChartAll"></canvas>
+            </div>
+        </div>
+    </div>
+      
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('colorChartAll');
+        var boulder_values = {{ color_values|safe }}
+        var boulder_labels = {{ color_labels|safe }}
+
+        let backgroundColors = [];
+        
+        // GETTING PROPER COLOR VALUES FOR THE PIE CHART. MAYBE FIND A BETTER WAY
+        // TO DO THIS IN THE FUTURE... 
+        for (let i = 0; i < boulder_labels.length; i++) {
+            console.log(boulder_labels[i])
+            switch (boulder_labels[i]) {
+                case 'Black':
+                    backgroundColors.push('#161716')
+                    break;
+                case 'Blue':
+                    backgroundColors.push('#2629e0')
+                    break;
+                case 'Green':
+                    backgroundColors.push('#35d419')
+                    break;
+                case 'Orange':
+                    backgroundColors.push('#e86b0c')
+                    break;
+                case 'Pink':
+                    backgroundColors.push('#ed0eb5')
+                    break;
+                case 'Yellow':
+                    backgroundColors.push('#e8da10')
+                    break;
+                default:
+                    backgroundColors.push('#ffffff')
+                    break;
+            }
+        }
+
+        new Chart(ctx, {
+            type: 'polarArea',
+            data: {
+                labels: boulder_labels,
+                datasets: [{
+                    label: 'Boulder count by color',
+                    data: boulder_values,
+                    borderWidth: 2,
+                    backgroundColor: backgroundColors,
+                    hoverOffset:5
+                }]
+            },
+            options: {
+                responsive:false,
+            }
+        });
+    </script>
+
+    <script>
+        const ctx2 = document.getElementById('gradeChartAll');
+        var boulder_values = {{ grade_values|safe }}
+        var boulder_labels = {{ grade_labels|safe }}
+
+        let backgroundColorsForGrades = []
+        let boulder_labels_as_Vgrade = []
+        for (let i = 0; i < boulder_labels.length; i++) {
+            let str = "V".concat(boulder_labels[i])
+            boulder_labels_as_Vgrade.push(str)
+        }
+
+        for (let i = 0; i < boulder_labels_as_Vgrade.length; i++) {
+            console.log(boulder_labels[i])
+            switch (boulder_labels_as_Vgrade[i]) {
+                case 'VB':
+                    backgroundColorsForGrades.push('#23ad0a')
+                    break;
+                case 'V0':
+                case 'V1':
+                    backgroundColorsForGrades.push('#fce803')
+                    break;
+                case 'V2':
+                case 'V3':
+                    backgroundColorsForGrades.push('#fc9d03')
+                    break;
+                case 'V4':
+                case 'V5':
+                    backgroundColorsForGrades.push('#fc0f03')
+                    break;
+                case 'V6':
+                case 'V7':
+                    backgroundColorsForGrades.push('#7703fc')
+                    break;
+                case 'V8':
+                case 'V9':
+                    backgroundColorsForGrades.push('#000000')
+                    break;
+                case 'V10':
+                case 'V11':
+                    backgroundColorsForGrades.push('#ccc9d4')
+                    break;
+                default:
+                    backgroundColorsForGrades.push('#ffffff')
+                    break;
+            }
+        }
+
+
+        new Chart(ctx2, {
+            type: 'bar',
+            axis: 'y',
+            data: {
+                labels: boulder_labels_as_Vgrade,
+                datasets: [{
+                    label: 'Boulder count by grade',
+                    data: boulder_values,
+                    borderWidth: 5,
+                    backgroundColor: backgroundColorsForGrades,
+                    borderColor: '#2a2a30'
+                }]
+            },
+            options: {
+                indexAxis: 'x',
+                scales: {
+                    y: {
+                        ticks: {
+                            precision:0,
+                        },
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+    </script>
+
+
+
+
+    {% endblock %}
+

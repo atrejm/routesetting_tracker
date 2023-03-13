@@ -1,0 +1,23 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+    <h1>Add Boulders to Zone: {{ zone_obj.zone_name }}</h1>
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+        <div class="btn-group mr-2 btn-group-md role="group" aria-label="First group">
+            {% for zone in all_zones %}
+                <a class="btn btn-secondary" href="{% url 'add_boulder' zone_name=zone.zone_name %}" role="button">{{ zone.zone_name }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <br>
+
+    <form method="POST">
+        {% csrf_token %}
+        {% crispy form_set helper %} 
+    </form>
+
+
+{% endblock %}
+

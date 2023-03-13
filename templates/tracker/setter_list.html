@@ -1,0 +1,20 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+
+    <div class="content">
+        <h1>Routesetter list page</h1>
+
+        <h3>Routesetters</h3>
+        <ul>
+            {% for setter in object_list %}
+                <li><a href="{% url 'routesetter_detail' pk=setter.pk %}">{{ setter.name }}</a></li>
+            {% empty %}
+                <h3><em>No routesetters...</em></h3>
+            {% endfor %}
+        </ul>
+    </div>
+
+    
+
+{% endblock %}
+

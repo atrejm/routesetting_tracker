@@ -1,0 +1,13 @@
+{% extends 'tracker/base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+    <h1>Add Routesetter</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        {% crispy form form.helper %}
+    </form>
+
+{% endblock %}
+
