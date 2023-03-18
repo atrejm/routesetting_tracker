@@ -5,7 +5,7 @@ from .models import Routesetter, BoulderProblem, ZoneModel
 from .forms import (RoutesetterForm, BoulderProblemForm, 
                     AddBoulderForm, AddBoulderFormSetHelper, 
                     ManageBoulderFormSetHelper, EditZoneFormSetHelper,
-                    DateInputForm, ZoneChoiceForm, ArchiveZoneForm)
+                    DateInputForm, ZoneChoiceForm, ArchiveZoneForm, GenericButton)
 from django.forms import formset_factory, modelformset_factory, inlineformset_factory
 from .boulderdata import get_boulders_by_attr
 import datetime
@@ -141,11 +141,11 @@ def edit_zone_view(request, zone):
 
     if request.method == "POST":
         form = ArchiveZoneForm(request.POST)
-        if form.is_valid():
+        if form.is_valid() and request.POST.get('form_id') == 'archive_boulders':
             return redirect("archive_confirmation", zone=zone_obj.zone_name) 
         
         formset = BoulderInlineFormSet(request.POST, request.FILES, instance=zone_obj)
-        if formset.is_valid():
+        if formset.is_valid() and request.POST.get('form_id') == 'save_boulders':
             formset.save()
             # Do something. Should generally end with a redirect. For example:
             return redirect("edit_zone", zone=zone_obj.zone_name)
@@ -176,4 +176,15 @@ def add_routesetter(request):
 
 @login_required
 def archive_confirmation(request, zone):
+    zone_obj=ZoneModel.objects.get(zone_name__iexact=zone)
+
+    if request.method == "POST":
+        print(request.POST)
+        if request.POST.get("form_id") == "Confirm":
+            # Archive all boulders in the selected zone
+            
+            return redirect("boulderchart")
+        if request.POST.get("form_id") == "Cancel":
+            return redirect("edit_zone", zone=zone_obj.zone_name )
+
     return render(request, 'tracker/archive_confirmation.html', {'zone':zone})

@@ -4,7 +4,7 @@ from .models import Routesetter, BoulderProblem, ZoneModel
 from django.forms.models import inlineformset_factory
 from django.core import validators
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Row, Column, Field, Fieldset, Button
+from crispy_forms.layout import Submit, Layout, Row, Column, Field, Fieldset, Button, Hidden
 
 
 class RoutesetterForm(forms.ModelForm):
@@ -82,6 +82,7 @@ class EditZoneFormSetHelper(FormHelper):
             )
         )
         self.add_input(Submit('submit','Save'))
+        self.add_input(Hidden('form_id', "save_boulders"))
         self.render_required_fields = True
 
 class DateInputForm(forms.Form):
@@ -109,4 +110,18 @@ class ArchiveZoneForm(forms.Form):
 
         self.helper = FormHelper()
         self.form_method = 'post'
-        self.helper.add_input(Submit('submit', "Archive this set?"))    
+        self.helper.add_input(Submit('submit', "Archive this set?"))
+        self.helper.add_input(Hidden('form_id', "archive_boulders"))    
+
+class GenericButton(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.form_method = 'post'
+        self.button_title = "Button"
+        self.button_id = "button_id"
+        self.helper.add_input(Submit('submit', self.button_title))
+        self.helper.add_input(Hidden('form_id', self.button_id)) 
+
+    
