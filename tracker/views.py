@@ -136,9 +136,6 @@ def edit_zone_view(request, zone):
     boulders = BoulderProblem.objects.filter(zone_name__exact=zone_obj.id)
     grade_labels, grade_values, num_boulders_by_grade = get_boulders_by_attr(boulders, "grade")
 
-    print(grade_labels)
-    print(grade_values)
-
     BoulderInlineFormSet = inlineformset_factory(ZoneModel, BoulderProblem, fields=('setter','grade','color'), can_delete=True)
     helper = EditZoneFormSetHelper()
 

@@ -1,4 +1,5 @@
 import random
+from collections import OrderedDict
 from tracker.models import BoulderProblem, Routesetter, ZoneModel
 
 COLOR_CHOICES = []
@@ -24,7 +25,8 @@ def add_random_boulders(number_of_boulders):
     zones = ZoneModel.objects.all()
 
     for i in range(number_of_boulders):
-        add_boulder(random.choice(setters).name, random.choice(GRADE_CHOICES), random.choice(COLOR_CHOICES), random.choice(zones))
+        weighted_grade_choice_index = get_weighted_gauss_guess()
+        add_boulder(random.choice(setters).name, GRADE_CHOICES[weighted_grade_choice_index], random.choice(COLOR_CHOICES), random.choice(zones))
     
 
 def add_setter(name):
@@ -58,3 +60,14 @@ def create_zones():
         print("Created {} object.".format(zone_name))
         zone_obj.save()
 
+def get_weighted_gauss_guess():
+    #exclude any guess below 0 or above 11
+    #5,2.5 hardcoded because its a reasonable distribution in this case
+
+    guess = int(random.gauss(5, 2.5))
+    guessValid = (guess >= 0) and (guess < 11)
+    while not guessValid:
+        guess = int(random.gauss(5, 3))
+        guessValid = (guess >= 0) and (guess < 11)
+    
+    return guess
